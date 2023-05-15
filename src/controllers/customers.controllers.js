@@ -18,7 +18,6 @@ export async function postCustomer(req, res){
         return res.sendStatus(201);
     } catch (error) {
         return res.status(500).send(error.message);
-
     }
 }
 
