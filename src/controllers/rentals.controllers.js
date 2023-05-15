@@ -36,3 +36,39 @@ export async function postRentals(req, res){
     }
 
 }
+
+export async function getRental(req, res){
+    try {
+        const rental = await db.query(`SELECT * FROM rentals`);
+        const game = await db.query(`SELECT * FROM games`);
+        const customer = await db.query(`SELECT * FROM customers`);
+        let array = [];
+        console.log(rental.rows[0].customerId)
+        rental.rows.map((e) => {
+            const indexCustomer = customer.rows.findIndex(obj => obj.id === e.customerId);
+            const indexGame = game.rows.findIndex(obj => obj.id === e.gameId);
+            const intoArray = {
+                id: e.id,
+                customerId: e.customerId,
+                gameId: e.gameId,
+                rentDate: e.rentDate,
+                daysRented: e.daysRented,
+                returnDate: e.returnDate,
+                originalPrice: e.originalPrice,
+                delayFee: e.delayFee,
+                customer: {
+                 id: e.customerId,
+                 name: customer.rows[indexCustomer].name
+                },
+                game: {
+                 id: e.gameId,
+                 name: game.rows[indexGame].name
+                }           
+            }
+            array.push(intoArray)
+        })
+        return res.send(array);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
